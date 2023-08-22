@@ -1,6 +1,9 @@
+// TranslatorController.js
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Translator = require('../models/Translator');
+const upload = require('../config/Multer'); // Update the path to the multer configuration file
+
 
 const translatorController = {
     // Fonction pour inscription d'un traducteur
@@ -59,8 +62,8 @@ const translatorController = {
                 specializations,
                 degrees,
                 isSwornTranslator,
-                swornTranslatorDoc,
-                identificationDoc,
+                swornTranslatorDoc: req.files['swornTranslatorDoc'] ? req.files['swornTranslatorDoc'][0].filename : null,
+                identificationDoc: req.files['identificationDoc'] ? req.files['identificationDoc'][0].filename : null,
             });
 
             await newTranslator.save();
@@ -91,7 +94,7 @@ const translatorController = {
                 expiresIn: '1h',
             });
 
-            res.json({ message: 'Login successful', token });
+            res.json({ message: 'Login successful', token, user: translator });
         } catch (error) {
             res.status(500).json({ message: 'Error logging in', error });
         }
@@ -119,6 +122,34 @@ const translatorController = {
             res.status(500).json({ message: 'Error updating translator data', error });
         }
     },
+
+// Function to retrieve user data by ID
+getTranslatorDataById: async (req, res) => {
+    try {
+      const userId = req.params.id;
+
+      // Récupérer l'ID de l'utilisateur à partir du token JWT
+      const token = req.headers.authorization;
+      const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+      const authorizedUserId = decodedToken.userId;
+
+      // Vérifier si l'ID autorisé correspond à l'ID demandé
+      if (authorizedUserId !== userId) {
+        return res.status(403).json({ message: 'Unauthorized access to user data' });
+      }
+
+      const user = await Translator.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json({ user });
+    } catch (error) {
+      res.status(500).json({ message: 'Error retrieving user data', error });
+    }
+  },
+
+
 };
 
 module.exports = translatorController;

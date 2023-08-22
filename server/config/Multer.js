@@ -6,7 +6,7 @@ const path = require('path');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // Indiquer le dossier de destination pour les fichiers téléchargés
-    cb(null, 'uploads/');
+    cb(null, './uploads/');
   },
   filename: function (req, file, cb) {
     // Générer un nom de fichier unique en ajoutant un timestamp au nom d'origine
