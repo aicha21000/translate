@@ -32,7 +32,7 @@ const userController = {
         return res.status(401).json({ message: 'Invalid password' });
       }
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
+        expiresIn: '4h', // Change the expiration time to 4 hours
       });
       res.json({ message: 'Login successful', token, user });
       

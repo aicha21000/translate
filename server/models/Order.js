@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
+  orderNumber: {
+    type: String,
+    unique: true, // Ensure order numbers are unique
+    required: true,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -10,8 +15,22 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  translationOptions: {
-    type: [String],
+  sourceLanguage: {
+    type: String,
+    required: true,
+  },
+  targetLanguage: {
+    type: String,
+    required: true,
+  },
+ 
+  deliveryOption: {
+    type: String,
+    enum: ['email', 'postal', 'priority', 'dhl'],
+    required: true,
+  },
+  numPages: {
+    type: Number,
     required: true,
   },
   totalAmount: {
