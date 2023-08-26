@@ -27,6 +27,12 @@ router.put('/:id', translatorController.updateTranslatorData);
 // Route pour récupérer les données de l'utilisateur par ID
 router.get('/:id', translatorController.getTranslatorDataById);
 
+// Route translators
+router.get('/', translatorController.getTranslator);
+
+
+// Route to get available translators based on languages
+router.get('/available', translatorController.getAvailableTranslators);
 
 
 

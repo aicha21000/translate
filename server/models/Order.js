@@ -23,7 +23,7 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
- 
+
   deliveryOption: {
     type: String,
     enum: ['email', 'postal', 'priority', 'dhl'],
@@ -42,6 +42,14 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending', 'validated', 'completed', 'cancelled'],
     default: 'pending',
   },
+
+  translator: {
+    type: mongoose.Schema.Types.ObjectId,
+
+
+
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,

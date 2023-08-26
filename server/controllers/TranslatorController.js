@@ -100,6 +100,16 @@ const translatorController = {
         }
     },
 
+    // Fonction pour récupérer la liste des traducteurs (admin)
+    getTranslator: async (req, res) => {
+        try {
+            const translators = await Translator.find();
+            res.json({ translators });
+        } catch (error) {
+            res.status(500).json({ message: 'Error fetching translators', error });
+        }
+    },
+
     // Fonction pour suppression de compte d'un traducteur
     deleteAccount: async (req, res) => {
         try {
@@ -146,6 +156,22 @@ getTranslatorDataById: async (req, res) => {
       res.json({ user });
     } catch (error) {
       res.status(500).json({ message: 'Error retrieving user data', error });
+    }
+  },
+
+  getAvailableTranslators: async (req, res) => {
+    try {
+      const { sourceLanguage, targetLanguage } = req.query;
+
+      // Find translators with nativeLanguage = sourceLanguage and workingLanguages include targetLanguage
+      const availableTranslators = await Translator.find({
+        nativeLanguage: sourceLanguage,
+        workingLanguages: targetLanguage,
+      });
+
+      res.json({ translators: availableTranslators });
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching available translators', error });
     }
   },
 

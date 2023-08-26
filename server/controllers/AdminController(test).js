@@ -44,7 +44,7 @@ const AdminController = {
       const pendingOrders = await Order.find({ status: 'pending' })
         .populate('user', 'username') // Populate the 'user' field with username
         .select('orderNumber sourceLanguage targetLanguage');
-
+        
       res.json({ orders: pendingOrders });
     } catch (error) {
       res.status(500).json({ message: 'Error fetching pending orders', error });
@@ -54,8 +54,8 @@ const AdminController = {
     try {
       const validatedOrders = await Order.find({ status: 'validated' })
         .populate('user', 'username') // Populate the 'user' field with username
-        .select('orderNumber sourceLanguage targetLanguage translator status createdAt translator   ');
-
+        .select('orderNumber sourceLanguage targetLanguage');
+        
       res.json({ orders: validatedOrders });
     } catch (error) {
       res.status(500).json({ message: 'Error fetching validated orders', error });
@@ -66,7 +66,7 @@ const AdminController = {
       const completedOrders = await Order.find({ status: 'completed' })
         .populate('user', 'username') // Populate the 'user' field with username
         .select('orderNumber sourceLanguage targetLanguage');
-
+        
       res.json({ orders: completedOrders });
     } catch (error) {
       res.status(500).json({ message: 'Error fetching completed orders', error });
@@ -88,74 +88,72 @@ const AdminController = {
   // Fonction pour récupérer la liste des traducteurs (admin)
   getTranslator: async (req, res) => {
     try {
+        const translators = await Translator.find();
+        res.json({ translators });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching translators', error });
+    }
+},
+///// test translators 
+assignTranslator: async (req, res) => {
+  try {
+     
+
       const translators = await Translator.find();
-      res.json({ translators });
-    } catch (error) {
+      // Filtrer les traducteurs ayant les langues de travail correspondantes
+      const matchedTranslators = translators.filter(translator => 
+        translator.nativeLanguage.includes('french')
+      );
+    
+    
+      res.json({ message: 'Matching translators found', translators: matchedTranslators });
+
+
+  } catch (error) {
       res.status(500).json({ message: 'Error fetching translators', error });
-    }
-  },
-
-
-
-
-  getAvailableTranslators: async (req, res) => {
-    try {
-      const { sourceLanguage, targetLanguage } = req.query;
-      const translators = await Translator.find({
-        nativeLanguage: sourceLanguage,
-        workingLanguages: targetLanguage,
-      });
-      res.json({ translators });
-    } catch (error) {
-      res.status(500).json({ message: 'Error fetching available translators', error });
-    }
-
-
-  },
-
-
-
-
-
-  // Updated assignTranslator function
-  assignTranslator: async (req, res) => {
-    try {
-      const orderId = req.params.id;
-      const { translatorId } = req.body; // Use req.body.translatorId to get the translator ID
-
-      console.log('orderId:', orderId);
-      // Find the order by its orderId
-      const order = await Order.findById(orderId);
-      console.log('order:', order);
-      console.log('translatorId:', translatorId);
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-
-      // Find the selected translator by its translatorId
-      const translator = await Translator.findById(translatorId);
-      if (!translator) {
-        return res.status(404).json({ message: 'Translator not found' });
-      }
-
-      // Assign the translator to the order
-      order.translator = translator;
-      order.status = 'validated';
-
-      await order.save();
-
-      res.json({ message: 'Translator assigned successfully', order });
-    } catch (error) {
-      res.status(500).json({ message: 'Error assigning translator', error });
-    }
   }
+},
 
 
+// // Fonction pour affecter un traducteur à une commande
+// assignTranslator: async (req, res) => {
+//   try {
+//     const { translatorId } = req.body;
+//     const { id } = req.params;
+
+//     // Récupérez les informations de la commande
+//     const order = await Order.findById(id)
+//       .populate('user', 'username')
+//       .select('sourceLanguage targetLanguage');
+
+//     if (!order) {
+//       return res.status(404).json({ message: 'Order not found' });
+//     }
+
+//     // Récupérez les traducteurs qui ont la langue native correspondante
+//     const translators = await Translator.find({ nativeLanguage: order.sourceLanguage });
+
+//     // Filtrer les traducteurs ayant les langues de travail correspondantes
+//     const matchedTranslators = translators.filter(translator =>
+//       translator.workingLanguages.includes(order.targetLanguage)
+//     );
+
+//     if (matchedTranslators.length === 0) {
+//       return res.status(404).json({ message: 'No matching translator found' });
+//     }
+
+//     // Ici, vous pouvez envoyer les traducteurs correspondants en réponse
+//     res.json({ message: 'Matching translators found', translators: matchedTranslators });
+
+//     // ... Autre logique de mise à jour de la commande si nécessaire ...
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error assigning translator', error });
+//   }
+// },
+// };
 
 
-
-
-
+  // ... Other admin functions ...
 
 }
 module.exports = AdminController;
