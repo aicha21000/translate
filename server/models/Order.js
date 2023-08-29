@@ -1,3 +1,4 @@
+// Model Order.js
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
@@ -45,9 +46,10 @@ const orderSchema = new mongoose.Schema({
 
   translator: {
     type: mongoose.Schema.Types.ObjectId,
+  },
 
-
-
+  sendFile: {
+    type: [String],
   },
 
   createdAt: {

@@ -31,8 +31,8 @@ router.get('/:id', translatorController.getTranslatorDataById);
 router.get('/', translatorController.getTranslator);
 
 
-// Route to get available translators based on languages
-router.get('/available', translatorController.getAvailableTranslators);
+// Route to get validated orders
+router.get('/orders/validated', translatorController.getValidatedOrders);
 
 
 

@@ -2,8 +2,16 @@ const express = require('express');
 const orderController = require('../controllers/OrderController');
 const router = express.Router();
 
+
+const upload = require('../config/Multer'); // Update the path to the multer configuration file
+
+
+
 // Route to create a new order
-router.post('/', orderController.createOrder);
+router.post('/',
+    upload.array('sendFile', 10),
+
+    orderController.createOrder);
 
 // Route to get all orders
 router.get('/', orderController.getAllOrders);

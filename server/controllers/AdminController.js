@@ -43,7 +43,7 @@ const AdminController = {
     try {
       const pendingOrders = await Order.find({ status: 'pending' })
         .populate('user', 'username') // Populate the 'user' field with username
-        .select('orderNumber sourceLanguage targetLanguage');
+        .select('orderNumber sourceLanguage targetLanguage user status createdAt ');
 
       res.json({ orders: pendingOrders });
     } catch (error) {
@@ -54,7 +54,7 @@ const AdminController = {
     try {
       const validatedOrders = await Order.find({ status: 'validated' })
         .populate('user', 'username') // Populate the 'user' field with username
-        .select('orderNumber sourceLanguage targetLanguage translator status createdAt translator   ');
+        .select('orderNumber sourceLanguage targetLanguage translator status createdAt user translator   ');
 
       res.json({ orders: validatedOrders });
     } catch (error) {
@@ -65,7 +65,7 @@ const AdminController = {
     try {
       const completedOrders = await Order.find({ status: 'completed' })
         .populate('user', 'username') // Populate the 'user' field with username
-        .select('orderNumber sourceLanguage targetLanguage');
+        .select('orderNumber sourceLanguage targetLanguage user');
 
       res.json({ orders: completedOrders });
     } catch (error) {
@@ -76,7 +76,7 @@ const AdminController = {
     try {
       const cancelledOrders = await Order.find({ status: 'cancelled' })
         .populate('user', 'username') // Populate the 'user' field with username
-        .select('orderNumber sourceLanguage targetLanguage');
+        .select('orderNumber sourceLanguage targetLanguage translator status createdAt user translator   ');
 
       res.json({ orders: cancelledOrders });
     } catch (error) {
@@ -111,6 +111,27 @@ const AdminController = {
     }
 
 
+  },
+
+  // annuler une commande
+  cancelOrder: async (req, res) => {
+    try {
+      const orderId = req.params.id;
+
+      const order = await Order.findByIdAndUpdate(
+        orderId,
+        { status: 'cancelled' },
+        { new: true }
+      );
+
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      res.json({ message: 'Order cancelled successfully', order });
+    } catch (error) {
+      res.status(500).json({ message: 'Error cancelling order', error });
+    }
   },
 
 
@@ -148,7 +169,52 @@ const AdminController = {
     } catch (error) {
       res.status(500).json({ message: 'Error assigning translator', error });
     }
-  }
+  },
+
+
+  // Assigner un autre traducteur à une commande
+
+  unassignTranslator: async (req, res) => {
+    try {
+      const orderId = req.params.id;
+
+      const order = await Order.findByIdAndUpdate(
+        orderId,
+        { translator: null, status: 'pending' },
+        { new: true }
+      );
+
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      res.json({ message: 'Translator unassigned successfully', order });
+    } catch (error) {
+      res.status(500).json({ message: 'Error unassigning translator', error });
+    }
+  },
+
+  // Reactivate a cancelled order
+  reactivateOrder: async (req, res) => {
+    try {
+      const orderId = req.params.id;
+
+      const order = await Order.findByIdAndUpdate(
+        orderId,
+        { status: 'pending', translator: null }, // Change the status to 'pending' and remove the translator assignment
+        { new: true }
+      );
+
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      res.json({ message: 'Order reactivated successfully', order });
+    } catch (error) {
+      res.status(500).json({ message: 'Error reactivating order', error });
+    }
+  },
+
 
 
 

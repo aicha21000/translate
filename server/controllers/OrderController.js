@@ -1,20 +1,21 @@
+// orderController.js
 const Order = require('../models/Order');
+const upload = require('../config/Multer');
 
 const orderController = {
-  // Function to create a new order
   createOrder: async (req, res) => {
     try {
-        const {
-          orderNumber,
-          translationType,
-          user,
-          sourceLanguage,
-          targetLanguage,
-          deliveryOption,
-          numPages,
-          totalAmount,
-        } = req.body;
-      // Generate a unique order number (you can customize the format)
+      const {
+        orderNumber,
+        user,
+        translationType,
+        sourceLanguage,
+        targetLanguage,
+        deliveryOption,
+        numPages,
+        sendFile,
+        totalAmount,
+      } = req.body;
 
       const newOrder = new Order({
         orderNumber,
@@ -24,8 +25,10 @@ const orderController = {
         targetLanguage,
         deliveryOption,
         numPages,
+        sendFile: req.files['sendFile'] ? req.files['sendFile'][0].filename : null,
         totalAmount,
       });
+
       await newOrder.save();
       res.status(201).json({ message: 'Order created successfully', order: newOrder });
     } catch (error) {
@@ -83,11 +86,11 @@ const orderController = {
 
 // Generate a unique order number (example function, you can modify as needed)
 function generateOrderNumber() {
-    // Logic to generate a unique order number based on timestamp, user ID, etc.
-    const timestamp = Date.now();
-    const randomPart = Math.floor(Math.random() * 10000);
-    const orderNumber = `${timestamp}-${randomPart}`;
-    return orderNumber;
-  }
-  
-  module.exports = orderController;
+  // Logic to generate a unique order number based on timestamp, user ID, etc.
+  const timestamp = Date.now();
+  const randomPart = Math.floor(Math.random() * 10000);
+  const orderNumber = `${timestamp}-${randomPart}`;
+  return orderNumber;
+}
+
+module.exports = orderController;

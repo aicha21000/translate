@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Translator = require('../models/Translator');
 const upload = require('../config/Multer'); // Update the path to the multer configuration file
-
+const Order = require('../models/Order');
 
 const translatorController = {
     // Fonction pour inscription d'un traducteur
@@ -33,13 +33,13 @@ const translatorController = {
                 'phoneNumber',
                 'countryOfResidence',
                 'nativeLanguage',
-              ];
-        
-              // Vérification des champs requis
-              const missingFields = requiredFields.filter(field => !req.body[field]);
-              if (missingFields.length > 0) {
+            ];
+
+            // Vérification des champs requis
+            const missingFields = requiredFields.filter(field => !req.body[field]);
+            if (missingFields.length > 0) {
                 return res.status(400).json({ message: `Required fields are missing: ${missingFields.join(', ')}` });
-              }
+            }
 
 
             // Vérifier si l'email est déjà utilisé
@@ -133,47 +133,42 @@ const translatorController = {
         }
     },
 
-// Function to retrieve user data by ID
-getTranslatorDataById: async (req, res) => {
-    try {
-      const userId = req.params.id;
+    // Function to retrieve user data by ID
+    getTranslatorDataById: async (req, res) => {
+        try {
+            const userId = req.params.id;
 
-      // Récupérer l'ID de l'utilisateur à partir du token JWT
-      const token = req.headers.authorization;
-      const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-      const authorizedUserId = decodedToken.userId;
+            // Récupérer l'ID de l'utilisateur à partir du token JWT
+            const token = req.headers.authorization;
+            const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+            const authorizedUserId = decodedToken.userId;
 
-      // Vérifier si l'ID autorisé correspond à l'ID demandé
-      if (authorizedUserId !== userId) {
-        return res.status(403).json({ message: 'Unauthorized access to user data' });
-      }
+            // Vérifier si l'ID autorisé correspond à l'ID demandé
+            if (authorizedUserId !== userId) {
+                return res.status(403).json({ message: 'Unauthorized access to user data' });
+            }
 
-      const user = await Translator.findById(userId);
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
+            const user = await Translator.findById(userId);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
 
-      res.json({ user });
-    } catch (error) {
-      res.status(500).json({ message: 'Error retrieving user data', error });
-    }
-  },
+            res.json({ user });
+        } catch (error) {
+            res.status(500).json({ message: 'Error retrieving user data', error });
+        }
+    },
 
-  getAvailableTranslators: async (req, res) => {
-    try {
-      const { sourceLanguage, targetLanguage } = req.query;
-
-      // Find translators with nativeLanguage = sourceLanguage and workingLanguages include targetLanguage
-      const availableTranslators = await Translator.find({
-        nativeLanguage: sourceLanguage,
-        workingLanguages: targetLanguage,
-      });
-
-      res.json({ translators: availableTranslators });
-    } catch (error) {
-      res.status(500).json({ message: 'Error fetching available translators', error });
-    }
-  },
+    getValidatedOrders: async (req, res) => {
+        try {
+            const validatedOrders = await Order.find({ status: 'validated' })
+                .populate('user', 'username') // Populate the 'user' field with username
+                .select('orderNumber sourceLanguage targetLanguage translator status createdAt translator');
+            res.json({ orders: validatedOrders });
+        } catch (error) {
+            res.status(500).json({ message: 'Error fetching validated orders', error });
+        }
+    },
 
 
 };
