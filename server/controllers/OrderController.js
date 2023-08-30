@@ -13,9 +13,11 @@ const orderController = {
         targetLanguage,
         deliveryOption,
         numPages,
-        sendFile,
         totalAmount,
       } = req.body;
+      // Get the filenames of the uploaded files
+      const uploadedFiles = req.files.map(file => file.filename);
+
 
       const newOrder = new Order({
         orderNumber,
@@ -25,7 +27,7 @@ const orderController = {
         targetLanguage,
         deliveryOption,
         numPages,
-        sendFile: req.files['sendFile'] ? req.files['sendFile'][0].filename : null,
+        sendFile: uploadedFiles, // Attach the filenames to the sendFile field
         totalAmount,
       });
 
