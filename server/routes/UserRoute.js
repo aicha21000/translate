@@ -15,6 +15,12 @@ router.delete('/:id', userController.deleteAccount);
 // Route pour la modification de données utilisateur
 router.put('/:id', userController.updateUserData);
 
+// Route pour récupérer les commandes de l'utilisateur
+router.get('/:id/orders', userController.getUserOrders);
+
+
+
+
 
 
 // Route pour récupérer les données de l'utilisateur par ID

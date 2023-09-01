@@ -2,6 +2,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Order = require('../models/Order'); // Ajoutez cette ligne pour importer le modèle Order
+
 // ...
 
 const userController = {
@@ -19,7 +21,7 @@ const userController = {
   },
 
 
-    // Fonction pour connexion
+  // Fonction pour connexion
   signIn: async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -35,7 +37,7 @@ const userController = {
         expiresIn: '4h', // Change the expiration time to 4 hours
       });
       res.json({ message: 'Login successful', token, user });
-      
+
     } catch (error) {
       res.status(500).json({ message: 'Error logging in', error });
     }
@@ -51,7 +53,7 @@ const userController = {
       res.status(500).json({ message: 'Error deleting account', error });
     }
   },
-  
+
   // Fonction pour modification de mot de passe ou autres données
   updateUserData: async (req, res) => {
     try {
@@ -86,6 +88,20 @@ const userController = {
       res.json({ user });
     } catch (error) {
       res.status(500).json({ message: 'Error retrieving user data', error });
+    }
+  },
+
+  // Fonction pour récupérer les commandes de l'utilisateur par son ID
+  getUserOrders: async (req, res) => {
+    try {
+      const userId = req.params.id;
+
+      // Récupérez les commandes de l'utilisateur en fonction de son ID
+      const orders = await Order.find({ user: userId });
+
+      res.json({ orders });
+    } catch (error) {
+      res.status(500).json({ message: 'Error retrieving user orders', error });
     }
   },
 };
