@@ -3,6 +3,8 @@ const express = require('express');
 const translatorController = require('../controllers/TranslatorController');
 const router = express.Router();
 const upload = require('../config/Multer'); // Update the path to the multer configuration file
+const archiver = require('archiver'); // Utilisez la bibliothèque 'archiver' pour créer un fichier ZIP
+
 
 // Route pour l'inscription
 
@@ -36,6 +38,13 @@ router.get('/orders/validated', translatorController.getValidatedOrders);
 
 // Route pour récupérer les commandes du traducteur par son ID
 router.get('/:id/orders', translatorController.getTranslatorOrders);
+
+
+
+// Route for fetching client files
+router.get('/:id/client-files', translatorController.getClientFiles);
+
+
 
 
 

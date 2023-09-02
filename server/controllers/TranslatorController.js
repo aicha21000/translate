@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 const Translator = require('../models/Translator');
 const upload = require('../config/Multer'); // Update the path to the multer configuration file
 const Order = require('../models/Order');
+const archiver = require('archiver'); // Utilisez la bibliothèque 'archiver' pour créer un fichier ZIP
+const fs = require('fs'); // Importez le module 'fs'
+
 
 const translatorController = {
     // Fonction pour inscription d'un traducteur
@@ -183,6 +186,72 @@ const translatorController = {
             res.status(500).json({ message: 'Error retrieving translator orders', error });
         }
     },
+
+
+
+    // getClientFiles: async (req, res) => {
+    //     try {
+    //         // Récupérez la liste des fichiers envoyés par les clients depuis le dossier "uploads"
+    //         // Vous pouvez utiliser un package comme "fs" pour lire le contenu du dossier
+    //         const fs = require('fs');
+    //         const uploadDir = './uploads'; // Chemin vers le dossier "uploads"
+
+    //         fs.readdir(uploadDir, (err, files) => {
+    //             if (err) {
+    //                 return res.status(500).json({ message: 'Error reading client files', error: err });
+    //             }
+
+    //             // Retournez la liste des fichiers au traducteur
+    //             res.json({ files });
+    //         });
+    //     } catch (error) {
+    //         res.status(500).json({ message: 'Error retrieving client files', error });
+    //     }
+    // },
+
+
+    getClientFiles: async (req, res) => {
+        try {
+            const userId = req.params.id;
+            const orderNumber = req.query.orderNumber; // Récupérez le numéro de commande depuis la requête
+
+            // Recherchez la commande spécifiée par l'ID du traducteur et le numéro de commande
+            const order = await Order.findOne({ translator: userId, orderNumber });
+
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
+            }
+
+            // Créez un fichier ZIP temporaire
+            const archive = archiver('zip');
+            const zipFileName = `client-files-${userId}-${orderNumber}.zip`;
+
+            // Ajoutez les fichiers correspondant au nom de fichier de la commande à l'archive
+            for (const fileName of order.sendFile) {
+                archive.file(`./uploads/${fileName}`, { name: fileName });
+            }
+
+            // Passez le fichier ZIP au flux de réponse
+            res.attachment(zipFileName);
+            archive.pipe(res);
+
+            // Finalisez l'archivage et renvoyez-le
+            archive.finalize();
+
+            archive.on('error', function (err) {
+                console.error('Erreur d\'archivage :', err);
+                res.status(500).json({ message: 'Erreur d\'archivage', error: err });
+            });
+        } catch (error) {
+            console.error('Erreur serveur :', error);
+            res.status(500).json({ message: 'Erreur serveur', error: error.message });
+        }
+    }
+
+
+
+
+
 
 
 
