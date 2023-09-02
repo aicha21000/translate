@@ -25,4 +25,8 @@ router.put('/:id', orderController.updateOrderStatus);
 // Route to delete an order
 router.delete('/:id', orderController.deleteOrder);
 
+// Route pour télécharger un fichier
+router.post('/upload-file/:orderId', upload.single('file'), orderController.uploadFile);
+
+
 module.exports = router;

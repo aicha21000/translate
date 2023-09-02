@@ -29,6 +29,7 @@ const orderController = {
         numPages,
         sendFile: uploadedFiles, // Attach the filenames to the sendFile field
         totalAmount,
+        translatedFile: uploadedFiles,
       });
 
       await newOrder.save();
@@ -84,6 +85,37 @@ const orderController = {
       res.status(500).json({ message: 'Error deleting order', error });
     }
   },
+
+
+
+  uploadFile: async (req, res) => {
+    try {
+      const orderId = req.params.orderId;
+      const file = req.file; // Fichier traduit téléchargé
+
+      if (!file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+
+      // Mettez à jour l'enregistrement de la commande avec le nom du fichier traduit
+      const order = await Order.findByIdAndUpdate(
+        orderId,
+        {
+          $push: { translatedFile: file.filename },
+          $set: { status: 'completed' }
+        },
+        { new: true }
+      );
+
+
+      res.status(200).json({ message: 'Translated file uploaded successfully', order });
+    } catch (error) {
+      console.error('Error uploading translated file:', error);
+      res.status(500).json({ message: 'Error uploading translated file', error });
+    }
+  },
+
+
 };
 
 // Generate a unique order number (example function, you can modify as needed)
@@ -94,5 +126,9 @@ function generateOrderNumber() {
   const orderNumber = `${timestamp}-${randomPart}`;
   return orderNumber;
 }
+
+
+
+
 
 module.exports = orderController;

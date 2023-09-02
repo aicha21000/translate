@@ -52,6 +52,10 @@ const orderSchema = new mongoose.Schema({
     type: [String],
   },
 
+  translatedFile: {
+    type: [String],
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,
