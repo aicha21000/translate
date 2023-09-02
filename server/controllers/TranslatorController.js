@@ -171,6 +171,21 @@ const translatorController = {
     },
 
 
+    getTranslatorOrders: async (req, res) => {
+        try {
+            const translatorId = req.params.id;
+
+            // Récupérez les commandes du traducteur en fonction de son ID
+            const orders = await Order.find({ translator: translatorId });
+
+            res.json({ orders });
+        } catch (error) {
+            res.status(500).json({ message: 'Error retrieving translator orders', error });
+        }
+    },
+
+
+
 };
 
 module.exports = translatorController;
