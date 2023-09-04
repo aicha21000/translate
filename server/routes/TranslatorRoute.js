@@ -34,7 +34,7 @@ router.get('/', translatorController.getTranslator);
 
 
 // Route to get validated orders
-router.get('/orders/validated', translatorController.getValidatedOrders);
+router.get('/orders/assigned', translatorController.getAssignedOrders);
 
 // Route pour récupérer les commandes du traducteur par son ID
 router.get('/:id/orders', translatorController.getTranslatorOrders);

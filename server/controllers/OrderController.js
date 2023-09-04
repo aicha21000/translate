@@ -19,6 +19,7 @@ const orderController = {
       const uploadedFiles = req.files.map(file => file.filename);
 
 
+
       const newOrder = new Order({
         orderNumber,
         user,
@@ -29,7 +30,6 @@ const orderController = {
         numPages,
         sendFile: uploadedFiles, // Attach the filenames to the sendFile field
         totalAmount,
-        translatedFile: uploadedFiles,
       });
 
       await newOrder.save();
@@ -102,7 +102,7 @@ const orderController = {
         orderId,
         {
           $push: { translatedFile: file.filename },
-          $set: { status: 'completed' }
+          $set: { status: 'translated' }
         },
         { new: true }
       );

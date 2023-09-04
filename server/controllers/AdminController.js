@@ -50,22 +50,33 @@ const AdminController = {
       res.status(500).json({ message: 'Error fetching pending orders', error });
     }
   },
-  getValidatedOrders: async (req, res) => {
+  getAssignedOrders: async (req, res) => {
     try {
-      const validatedOrders = await Order.find({ status: 'validated' })
+      const assignedOrders = await Order.find({ status: 'assigned' })
         .populate('user', 'username') // Populate the 'user' field with username
         .select('orderNumber sourceLanguage targetLanguage translator status createdAt user translator   ');
 
-      res.json({ orders: validatedOrders });
+      res.json({ orders: assignedOrders });
     } catch (error) {
-      res.status(500).json({ message: 'Error fetching validated orders', error });
+      res.status(500).json({ message: 'Error fetching assigned orders', error });
+    }
+  },
+  getTranslatedOrders: async (req, res) => {
+    try {
+      const translatedOrders = await Order.find({ status: 'translated' })
+        .populate('user', 'username') // Populate the 'user' field with username
+        .select('orderNumber sourceLanguage targetLanguage user translator');
+
+      res.json({ orders: translatedOrders });
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching translated orders', error });
     }
   },
   getCompletedOrders: async (req, res) => {
     try {
       const completedOrders = await Order.find({ status: 'completed' })
         .populate('user', 'username') // Populate the 'user' field with username
-        .select('orderNumber sourceLanguage targetLanguage user');
+        .select('orderNumber sourceLanguage targetLanguage user translator');
 
       res.json({ orders: completedOrders });
     } catch (error) {
@@ -161,7 +172,7 @@ const AdminController = {
 
       // Assign the translator to the order
       order.translator = translator;
-      order.status = 'validated';
+      order.status = 'assigned';
 
       await order.save();
 

@@ -162,14 +162,14 @@ const translatorController = {
         }
     },
 
-    getValidatedOrders: async (req, res) => {
+    getAssignedOrders: async (req, res) => {
         try {
-            const validatedOrders = await Order.find({ status: 'validated' })
+            const assignedOrders = await Order.find({ status: 'assigned' })
                 .populate('user', 'username') // Populate the 'user' field with username
                 .select('orderNumber sourceLanguage targetLanguage translator status createdAt translator');
-            res.json({ orders: validatedOrders });
+            res.json({ orders: assignedOrders });
         } catch (error) {
-            res.status(500).json({ message: 'Error fetching validated orders', error });
+            res.status(500).json({ message: 'Error fetching assigned orders', error });
         }
     },
 
@@ -188,26 +188,6 @@ const translatorController = {
     },
 
 
-
-    // getClientFiles: async (req, res) => {
-    //     try {
-    //         // Récupérez la liste des fichiers envoyés par les clients depuis le dossier "uploads"
-    //         // Vous pouvez utiliser un package comme "fs" pour lire le contenu du dossier
-    //         const fs = require('fs');
-    //         const uploadDir = './uploads'; // Chemin vers le dossier "uploads"
-
-    //         fs.readdir(uploadDir, (err, files) => {
-    //             if (err) {
-    //                 return res.status(500).json({ message: 'Error reading client files', error: err });
-    //             }
-
-    //             // Retournez la liste des fichiers au traducteur
-    //             res.json({ files });
-    //         });
-    //     } catch (error) {
-    //         res.status(500).json({ message: 'Error retrieving client files', error });
-    //     }
-    // },
 
 
     getClientFiles: async (req, res) => {
