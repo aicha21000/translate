@@ -14,6 +14,8 @@ router.post('/orders/:id/assign', adminController.assignTranslator);
 router.get('/translators', adminController.getTranslator);
 router.get('/translators/available', adminController.getAvailableTranslators);
 router.put('/orders/:id/cancel', adminController.cancelOrder);
+router.put('/orders/:id/complete', adminController.completeOrder);
+
 router.put('/orders/:id/unassign', adminController.unassignTranslator);
 // Reactivate a cancelled order
 router.put('/orders/:id/reactivate', adminController.reactivateOrder);

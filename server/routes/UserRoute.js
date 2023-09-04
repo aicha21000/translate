@@ -18,7 +18,11 @@ router.put('/:id', userController.updateUserData);
 // Route pour récupérer les commandes de l'utilisateur
 router.get('/:id/orders', userController.getUserOrders);
 
+// Route to get validated orders
+router.get('/:id/orders/completed', userController.getCompletedOrders);
 
+// Route for fetching  files
+router.get('/:id/client-files', userController.getFiles);
 
 
 
